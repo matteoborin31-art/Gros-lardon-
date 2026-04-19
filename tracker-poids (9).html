@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FC Gros Lardon</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#07080a;--bg2:#0d1117;--bg3:#161b22;--card:#161b22;--card2:#1c2333;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
+  --accent:#e8ff47;--accent2:#d4eb00;--accent-dim:rgba(232,255,71,0.1);
+  --at:#07080a;
+  --blue:#58a6ff;--blue-dim:rgba(88,166,255,0.12);
+  --purple:#bc8cff;--purple-dim:rgba(188,140,255,0.1);
+  --red:#ff6b6b;--red-dim:rgba(255,107,107,0.1);
+  --green:#3fb950;--green-dim:rgba(63,185,80,0.1);
+  --orange:#f0883e;--teal:#39d353;
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --r:12px;--rsm:8px;--rxl:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.syne{font-family:'Syne',sans-serif;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ─── LOADER ─── */
+#loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:20px;transition:opacity .4s;}
+#loader.hide{opacity:0;pointer-events:none;}
+.ld-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:38px;color:var(--accent);letter-spacing:-2px;}
+.ld-sub{font-size:13px;color:var(--text3);}
+.spin{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── AUTH ─── */
+#auth-screen{min-height:100vh;display:none;align-items:center;justify-content:center;padding:20px;position:relative;}
+#auth-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(232,255,71,.07),transparent 60%);}
+.auth-wrap{position:relative;z-index:1;width:100%;max-width:420px;}
+.auth-hero{text-align:center;margin-bottom:32px;}
+.auth-hero .big{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,9vw,56px);color:var(--accent);letter-spacing:-3px;line-height:.95;}
+.auth-hero .tagline{font-size:14px;color:var(--text3);margin-top:12px;}
+.auth-card{background:var(--card);border:1px solid var(--border2);border-radius:var(--rxl);padding:32px;}
+.tabs{display:flex;gap:3px;background:var(--bg2);padding:4px;border-radius:var(--rsm);margin-bottom:22px;}
+.tab-btn{flex:1;padding:9px;border:none;background:transparent;color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;border-radius:6px;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:var(--accent);color:var(--at);font-weight:600;}
+.f{margin-bottom:13px;}
+.f label{font-size:11px;font-weight:600;color:var(--text3);display:block;margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase;}
+.f input{width:100%;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);font-family:'Space Grotesk',sans-serif;font-size:14px;background:var(--bg2);color:var(--text);outline:none;transition:border-color .2s;}
+.f input:focus{border-color:var(--accent);}
+.f input::placeholder{color:var(--text3);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-main{width:100%;padding:13px;background:var(--accent);color:var(--at);border:none;border-radius:var(--rsm);font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;margin-top:6px;transition:all .2s;}
+.btn-main:hover{background:var(--accent2);transform:translateY(-1px);}
+.aerr{color:var(--red);font-size:13px;margin-top:10px;display:none;padding:8px 12px;background:var(--red-dim);border-radius:var(--rsm);text-align:center;}
+#reg-extra{display:none;}
+
+/* ─── APP SHELL ─── */
+#app{display:none;min-height:100vh;flex-direction:column;}
+
+/* TOPBAR */
+.topbar{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:30;}
+.tb-left{display:flex;align-items:center;gap:16px;}
+.tb-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--accent);letter-spacing:-1px;}
+.tb-nav{display:flex;gap:2px;}
+.tb-link{padding:6px 14px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-radius:var(--rsm);transition:all .2s;border:none;background:transparent;font-family:'Space Grotesk',sans-serif;}
+.tb-link:hover{color:var(--text);background:rgba(255,255,255,0.05);}
+.tb-link.active{color:var(--accent);background:var(--accent-dim);}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-sync{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+.sdot.s{background:var(--orange);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.user-btn{display:flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--border2);padding:6px 12px;border-radius:20px;cursor:pointer;transition:all .2s;}
+.user-btn:hover{border-color:var(--border);}
+.u-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.u-name{font-size:13px;font-weight:500;color:var(--text);}
+.u-adm{font-size:10px;font-weight:700;background:var(--accent);color:var(--at);padding:1px 7px;border-radius:20px;display:none;}
+.btn-settings{background:var(--card2);border:1px solid var(--border2);color:var(--text2);width:34px;height:34px;border-radius:var(--rsm);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:16px;}
+.btn-settings:hover{color:var(--text);border-color:var(--border);}
+
+/* CONTENT */
+.content{flex:1;padding:28px 24px;max-width:1100px;margin:0 auto;width:100%;}
+.page{display:none;animation:fadein .2s ease;}
+.page.active{display:block;}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.ph{margin-bottom:24px;}
+.ph h1{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;letter-spacing:-1px;}
+.ph p{font-size:14px;color:var(--text2);margin-top:4px;}
+
+/* STAT CARDS */
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;transition:border-color .2s;position:relative;overflow:hidden;}
+.sc::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.02),transparent);pointer-events:none;}
+.sc:hover{border-color:var(--border2);}
+.sc .ico{font-size:20px;margin-bottom:12px;display:block;}
+.sc .lbl{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;}
+.sc .val{font-family:'Syne',sans-serif;font-weight:700;font-size:26px;letter-spacing:-1px;}
+.sc .val.good{color:var(--green);}
+.sc .val.bad{color:var(--red);}
+.sc .val.accent{color:var(--accent);}
+.sc .sub-val{font-size:12px;color:var(--text3);margin-top:4px;}
+
+/* PANEL */
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:16px;}
+.phdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.ptitle{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;letter-spacing:-.3px;display:flex;align-items:center;gap:8px;}
+.ptitle .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+.pbadge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g13{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
+
+/* INPUTS */
+.add-row{display:flex;gap:8px;flex-wrap:wrap;}
+.inp{padding:10px 13px;border:1px solid var(--border2);border-radius:var(--rsm);font-family:'Space Grotesk',sans-serif;font-size:14px;background:var(--bg2);color:var(--text);outline:none;transition:border-color .2s;}
+.inp:focus{border-color:var(--accent);}
+.inp::placeholder{color:var(--text3);}
+.inp.flex1{flex:1;min-width:110px;}
+.btn-a{padding:10px 20px;background:var(--accent);color:var(--at);border:none;border-radius:var(--rsm);font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn-a:hover{background:var(--accent2);}
+.btn-ghost{padding:9px 16px;background:transparent;border:1px solid var(--border2);color:var(--text2);border-radius:var(--rsm);font-family:'Space Grotesk',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;}
+.btn-ghost:hover{border-color:var(--border);color:var(--text);}
+.emsg{font-size:13px;margin-top:10px;display:none;padding:8px 12px;border-radius:var(--rsm);}
+.emsg.ok{background:var(--green-dim);color:var(--green);}
+.emsg.err{background:var(--red-dim);color:var(--red);}
+
+/* CHART */
+.legend-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.li{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);}
+.ldot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.chart-wrap{position:relative;}
+
+/* LEADERBOARD */
+.lb-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.lb-row:last-child{border-bottom:none;}
+.lb-l{display:flex;align-items:center;gap:10px;}
+.lb-rank{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;width:26px;color:var(--text3);}
+.lb-rank.gold{color:var(--accent);}
+.lb-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.lb-name{font-weight:500;font-size:14px;}
+.lb-you{font-size:11px;color:var(--text3);margin-left:5px;font-weight:400;}
+.lb-r{text-align:right;}
+.lb-val{font-weight:600;font-size:14px;}
+.lb-val.good{color:var(--green);}
+.lb-val.bad{color:var(--red);}
+.lb-pct{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* ENTRIES */
+.elist{max-height:230px;overflow-y:auto;}
+.erow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
+.erow:last-child{border-bottom:none;}
+.edate{color:var(--text3);font-size:12px;}
+.ew{font-weight:600;font-size:14px;}
+.edel{background:none;border:none;cursor:pointer;color:var(--text3);font-size:15px;padding:2px 6px;border-radius:5px;transition:all .2s;}
+.edel:hover{color:var(--red);background:var(--red-dim);}
+
+/* STREAK / ACTIVITY */
+.streak-card{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card2);border-radius:var(--r);margin-bottom:12px;}
+.streak-icon{font-size:28px;}
+.streak-val{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--orange);}
+.streak-lbl{font-size:12px;color:var(--text3);margin-top:2px;}
+
+/* IMC */
+.imc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.imc-box{background:var(--card2);border-radius:var(--r);padding:18px;text-align:center;}
+.imc-box .v{font-family:'Syne',sans-serif;font-weight:800;font-size:32px;letter-spacing:-1px;margin:6px 0;}
+.imc-box .l{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.imc-bar-wrap{margin:16px 0 6px;}
+.imc-bar{position:relative;height:8px;border-radius:4px;background:linear-gradient(to right,#58a6ff 0%,#3fb950 28%,#f0883e 55%,#ff6b6b 80%,#cc0000 100%);}
+.imc-cur{position:absolute;top:-6px;width:3px;height:20px;background:#fff;border-radius:2px;transform:translateX(-50%);box-shadow:0 0 6px rgba(255,255,255,.5);transition:left .6s cubic-bezier(.34,1.56,.64,1);}
+.imc-ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px;}
+.mimc-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+.mimc-row:last-child{border-bottom:none;}
+.mimc-l{display:flex;align-items:center;gap:10px;}
+.mimc-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.mimc-name{font-weight:500;font-size:14px;}
+.mimc-r{display:flex;align-items:center;gap:10px;}
+.mimc-val{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;}
+.pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.pill.under{background:var(--blue-dim);color:var(--blue);}
+.pill.normal{background:var(--green-dim);color:var(--green);}
+.pill.surp{background:rgba(240,136,62,.12);color:var(--orange);}
+.pill.obese{background:var(--red-dim);color:var(--red);}
+.imc-update-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:1px solid var(--border);}
+
+/* ADMIN */
+.amr{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+.amr:last-child{border-bottom:none;}
+.amr-l{display:flex;align-items:center;gap:12px;}
+.amr-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.amr-name{font-weight:500;font-size:15px;}
+.amr-email{font-size:12px;color:var(--text3);margin-top:2px;}
+.you-p{font-size:10px;font-weight:700;background:var(--accent);color:var(--at);padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle;}
+.adm-p{font-size:10px;font-weight:700;background:var(--blue-dim);color:var(--blue);padding:2px 8px;border-radius:20px;margin-left:4px;vertical-align:middle;}
+.btn-kick{background:var(--red-dim);border:1px solid rgba(255,107,107,.2);color:var(--red);font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;padding:7px 14px;border-radius:var(--rsm);cursor:pointer;transition:all .2s;}
+.btn-kick:hover{background:rgba(255,107,107,.2);}
+
+/* ─── SETTINGS OVERLAY ─── */
+#settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;backdrop-filter:blur(4px);}
+.settings-panel{background:var(--card);border:1px solid var(--border2);border-radius:var(--rxl);padding:0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.sp-header{padding:24px 28px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sp-header h2{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.5px;}
+.sp-close{background:none;border:1px solid var(--border2);color:var(--text2);width:32px;height:32px;border-radius:var(--rsm);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.sp-close:hover{color:var(--text);border-color:var(--border);}
+.sp-body{padding:24px 28px;}
+.sp-section{margin-bottom:28px;}
+.sp-section-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.sp-avatar-row{display:flex;align-items:center;gap:16px;margin-bottom:18px;}
+.sp-av-big{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0;}
+.sp-av-info .name{font-weight:600;font-size:16px;}
+.sp-av-info .sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.sp-row{display:flex;gap:10px;align-items:flex-end;margin-bottom:12px;}
+.sp-row .f{flex:1;margin-bottom:0;}
+.sp-footer{padding:16px 28px 24px;display:flex;gap:10px;border-top:1px solid var(--border);}
+.sp-footer .btn-a{flex:1;}
+.danger-zone{background:var(--red-dim);border:1px solid rgba(255,107,107,.2);border-radius:var(--r);padding:16px;}
+.danger-title{font-size:13px;font-weight:600;color:var(--red);margin-bottom:8px;}
+.danger-sub{font-size:12px;color:var(--text3);margin-bottom:12px;line-height:1.5;}
+.btn-danger{background:var(--red-dim);border:1px solid rgba(255,107,107,.3);color:var(--red);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:8px 16px;border-radius:var(--rsm);cursor:pointer;transition:all .2s;}
+.btn-danger:hover{background:rgba(255,107,107,.2);}
+
+/* SETUP OVERLAY (first login) */
+#setup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:400;padding:20px;backdrop-filter:blur(6px);}
+.setup-box{background:var(--card);border:1px solid var(--border2);border-radius:var(--rxl);padding:36px;width:100%;max-width:400px;text-align:center;}
+.setup-box h2{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--accent);letter-spacing:-1px;margin-bottom:8px;}
+.setup-box p{font-size:14px;color:var(--text2);margin-bottom:22px;line-height:1.6;}
+
+/* BANNED */
+#banned-screen{min-height:100vh;display:none;align-items:center;justify-content:center;text-align:center;padding:20px;}
+#banned-screen .bi{font-size:52px;margin-bottom:20px;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .topbar{padding:0 16px;}.tb-logo{font-size:16px;}.tb-nav{display:none;}
+  .content{padding:16px;}.sgrid{grid-template-columns:1fr 1fr;}
+  .g2,.g13,.imc-grid{grid-template-columns:1fr;}
+  .imc-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <p class="ld-logo syne">FCGL</p>
+  <div class="spin"></div>
+  <p class="ld-sub">Chargement…</p>
+</div>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-wrap">
+    <div class="auth-hero">
+      <p class="big syne">FC<br>GROS<br>LARDON</p>
+      <p class="tagline">Le défi poids entre potes 💪</p>
+    </div>
+    <div class="auth-card">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('login')">Se connecter</button>
+        <button class="tab-btn" onclick="switchTab('register')">S'inscrire</button>
+      </div>
+      <div class="f"><label>Email</label><input id="auth-email" type="email" placeholder="toi@email.com"/></div>
+      <div class="f"><label>Mot de passe</label><input id="auth-pwd" type="password" placeholder="••••••••"/></div>
+      <div id="reg-extra">
+        <div class="f"><label>Pseudo (affiché dans le groupe)</label><input id="auth-pseudo" type="text" placeholder="ex: Matteo" maxlength="20"/></div>
+        <div class="row2">
+          <div class="f"><label>Poids de départ (kg)</label><input id="auth-sw" type="number" placeholder="85.5" step="0.1" min="30" max="300"/></div>
+          <div class="f"><label>Taille (cm)</label><input id="auth-h" type="number" placeholder="178" min="100" max="250"/></div>
+        </div>
+        <div class="row2">
+          <div class="f"><label>Objectif (kg)</label><input id="auth-goal" type="number" placeholder="75" step="0.1" min="30" max="300"/></div>
+          <div class="f"><label>Âge</label><input id="auth-age" type="number" placeholder="28" min="10" max="100"/></div>
+        </div>
+      </div>
+      <button class="btn-main" id="auth-btn" onclick="doAuth()">Se connecter →</button>
+      <p id="auth-err" class="aerr"></p>
+    </div>
+  </div>
+</div>
+
+<!-- BANNED -->
+<div id="banned-screen">
+  <div>
+    <div class="bi">🚫</div>
+    <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--red);letter-spacing:-1px;margin-bottom:10px;">Accès refusé</h2>
+    <p style="color:var(--text2);font-size:14px;max-width:300px;margin:0 auto;line-height:1.6;">Tu as été exclu par l'administrateur. Contacte Matteo si c'est une erreur.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="flex-direction:column;">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-left">
+      <span class="tb-logo syne">FCGL</span>
+      <div class="tb-nav">
+        <button class="tb-link active" onclick="showPage('dashboard')" id="nav-dashboard">Dashboard</button>
+        <button class="tb-link" onclick="showPage('courbes')" id="nav-courbes">Courbes</button>
+        <button class="tb-link" onclick="showPage('imc')" id="nav-imc">IMC</button>
+        <button class="tb-link" id="nav-admin" onclick="showPage('admin')" style="display:none;">Admin</button>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-sync"><span class="sdot" id="sdot"></span><span id="sync-txt">Connecté</span></div>
+      <div class="user-btn" onclick="openSettings()">
+        <div class="u-av" id="tb-av">?</div>
+        <span class="u-name" id="tb-name">…</span>
+        <span class="u-adm" id="tb-adm">ADMIN</span>
+      </div>
+      <button class="btn-settings" onclick="openSettings()" title="Paramètres">⚙</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ─── DASHBOARD ─── -->
+    <div class="page active" id="page-dashboard">
+      <div class="ph">
+        <h1 class="syne" id="dash-title">Bonjour 👋</h1>
+        <p id="dash-sub" style="font-size:14px;color:var(--text2);margin-top:4px;">Voici ton suivi du jour</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="sgrid" id="sgrid"></div>
+
+      <div class="g13">
+        <!-- Colonne gauche -->
+        <div>
+          <!-- Courbe individuelle -->
+          <div class="panel">
+            <div class="phdr">
+              <span class="ptitle"><span class="dot"></span>Ma courbe</span>
+              <span class="pbadge" style="background:var(--accent-dim);color:var(--accent);">Personnel</span>
+            </div>
+            <div class="chart-wrap" style="height:200px;"><canvas id="chart-personal" role="img" aria-label="Ma courbe de poids"></canvas></div>
+          </div>
+
+          <!-- Courbe collective -->
+          <div class="panel">
+            <div class="phdr">
+              <span class="ptitle"><span class="dot"></span>Courbe du groupe</span>
+              <span class="pbadge" style="background:var(--blue-dim);color:var(--blue);">Collectif</span>
+            </div>
+            <div class="legend-row" id="legend-mini"></div>
+            <div class="chart-wrap" style="height:180px;"><canvas id="chart-group-mini" role="img" aria-label="Courbes du groupe"></canvas></div>
+          </div>
+
+          <!-- Ajouter pesée -->
+          <div class="panel">
+            <div class="phdr"><span class="ptitle"><span class="dot"></span>Ajouter une pesée</span></div>
+            <div class="add-row">
+              <input class="inp flex1" id="w-input" type="number" placeholder="Poids (kg)" step="0.1" min="30" max="300"/>
+              <input class="inp flex1" id="d-input" type="date"/>
+              <button class="btn-a" onclick="addEntry()">Enregistrer</button>
+            </div>
+            <p id="entry-msg" class="emsg"></p>
+          </div>
+        </div>
+
+        <!-- Colonne droite -->
+        <div>
+          <!-- Streak -->
+          <div class="panel">
+            <div class="phdr"><span class="ptitle"><span class="dot"></span>Activité</span></div>
+            <div class="streak-card">
+              <span class="streak-icon">🔥</span>
+              <div>
+                <div class="streak-val" id="streak-val">0</div>
+                <div class="streak-lbl">jours consécutifs</div>
+              </div>
+            </div>
+            <div id="progress-goal"></div>
+          </div>
+
+          <!-- Classement -->
+          <div class="panel">
+            <div class="phdr"><span class="ptitle"><span class="dot"></span>Classement</span></div>
+            <div id="lb-dash"></div>
+          </div>
+
+          <!-- Mes pesées -->
+          <div class="panel">
+            <div class="phdr"><span class="ptitle"><span class="dot"></span>Mes pesées</span></div>
+            <div class="elist" id="my-entries"></div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:12px;font-size:11px;color:var(--text3);">
+              <span class="sdot" id="sync-dot2"></span>Sync temps réel
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── COURBES ─── -->
+    <div class="page" id="page-courbes">
+      <div class="ph"><h1 class="syne">Courbes de progression</h1><p style="font-size:14px;color:var(--text2);">Évolution de tout le groupe</p></div>
+      <div class="panel">
+        <div class="phdr">
+          <span class="ptitle"><span class="dot"></span>Tout le groupe</span>
+        </div>
+        <div class="legend-row" id="legend-full"></div>
+        <div class="chart-wrap" style="height:300px;"><canvas id="chart-full" role="img" aria-label="Courbes complètes"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="phdr"><span class="ptitle"><span class="dot"></span>Classement détaillé</span></div>
+        <div id="lb-courbes"></div>
+      </div>
+    </div>
+
+    <!-- ─── IMC ─── -->
+    <div class="page" id="page-imc">
+      <div class="ph"><h1 class="syne">IMC du groupe</h1><p style="font-size:14px;color:var(--text2);">Espace privé · membres uniquement</p></div>
+      <div class="panel">
+        <div class="phdr">
+          <span class="ptitle"><span class="dot"></span>Mon IMC</span>
+          <span class="pill" id="my-imc-pill" style="background:var(--green-dim);color:var(--green);">–</span>
+        </div>
+        <div class="imc-grid">
+          <div class="imc-box"><div class="l">IMC actuel</div><div class="v" id="my-imc-v" style="color:var(--accent);">–</div><div class="l">kg/m²</div></div>
+          <div class="imc-box"><div class="l">Poids idéal</div><div class="v" id="my-ideal-v" style="color:var(--blue);">–</div><div class="l">kg (IMC 22)</div></div>
+          <div class="imc-box"><div class="l">Objectif</div><div class="v" id="my-goal-v">–</div><div class="l">kg à perdre</div></div>
+        </div>
+        <div class="imc-bar-wrap">
+          <div class="imc-bar"><div class="imc-cur" id="imc-cur" style="left:0%"></div></div>
+          <div class="imc-ticks"><span>16</span><span>18.5</span><span>25</span><span>30</span><span>40</span></div>
+        </div>
+        <div class="imc-update-row">
+          <input class="inp flex1" id="height-upd" type="number" placeholder="Mettre à jour ma taille (cm)" min="100" max="250"/>
+          <button class="btn-a" onclick="updHeight()">Mettre à jour</button>
+        </div>
+        <p id="height-msg" class="emsg"></p>
+      </div>
+      <div class="panel">
+        <div class="phdr"><span class="ptitle"><span class="dot"></span>IMC de tous les membres</span></div>
+        <div id="group-imc"></div>
+      </div>
+    </div>
+
+    <!-- ─── ADMIN ─── -->
+    <div class="page" id="page-admin">
+      <div class="ph"><h1 class="syne">Gestion des membres</h1><p style="font-size:14px;color:var(--text2);">Visible uniquement par toi</p></div>
+      <div class="panel">
+        <div class="phdr">
+          <span class="ptitle"><span class="dot"></span>Membres actifs</span>
+          <span class="pbadge" id="member-count" style="background:var(--accent-dim);color:var(--accent);">0</span>
+        </div>
+        <div id="admin-list"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SETUP OVERLAY (1ère connexion sans données) -->
+<div id="setup-overlay">
+  <div class="setup-box">
+    <h2>Presque !</h2>
+    <p>Renseigne ta taille pour activer le calcul IMC. Tu pourras tout modifier plus tard dans les paramètres.</p>
+    <input class="inp" id="setup-h" type="number" placeholder="Ta taille (cm)" min="100" max="250" style="width:100%;margin-bottom:10px;"/>
+    <input class="inp" id="setup-goal" type="number" placeholder="Ton objectif (kg) — optionnel" step="0.1" min="30" max="300" style="width:100%;margin-bottom:14px;"/>
+    <button class="btn-main" onclick="saveSetup()">C'est parti →</button>
+    <p id="setup-err" class="emsg err" style="margin-top:10px;display:none;"></p>
+  </div>
+</div>
+
+<!-- SETTINGS OVERLAY -->
+<div id="settings-overlay">
+  <div class="settings-panel">
+    <div class="sp-header">
+      <h2>Paramètres</h2>
+      <button class="sp-close" onclick="closeSettings()">×</button>
+    </div>
+    <div class="sp-body">
+
+      <!-- Profil -->
+      <div class="sp-section">
+        <div class="sp-section-title">Mon profil</div>
+        <div class="sp-avatar-row">
+          <div class="sp-av-big" id="sp-av-big">?</div>
+          <div class="sp-av-info">
+            <div class="name" id="sp-av-name">…</div>
+            <div class="sub" id="sp-av-email">…</div>
+          </div>
+        </div>
+        <div class="f"><label>Pseudo</label><input class="inp" id="sp-pseudo" type="text" placeholder="Ton pseudo" maxlength="20" style="width:100%;"/></div>
+        <div class="f"><label>Âge</label><input class="inp" id="sp-age" type="number" placeholder="Ton âge" min="10" max="100" style="width:100%;"/></div>
+      </div>
+
+      <!-- Mesures -->
+      <div class="sp-section">
+        <div class="sp-section-title">Mesures & Objectif</div>
+        <div class="row2">
+          <div class="f"><label>Taille (cm)</label><input class="inp" id="sp-height" type="number" placeholder="ex: 178" min="100" max="250" style="width:100%;"/></div>
+          <div class="f"><label>Poids de départ (kg)</label><input class="inp" id="sp-sw" type="number" placeholder="ex: 85" step="0.1" min="30" max="300" style="width:100%;"/></div>
+        </div>
+        <div class="f"><label>Objectif de poids (kg)</label><input class="inp" id="sp-goal" type="number" placeholder="ex: 75" step="0.1" min="30" max="300" style="width:100%;"/></div>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="sp-section">
+        <div class="sp-section-title">Zone de danger</div>
+        <div class="danger-zone">
+          <div class="danger-title">⚠️ Réinitialiser mes données</div>
+          <div class="danger-sub">Supprime toutes tes pesées. Cette action est irréversible.</div>
+          <button class="btn-danger" onclick="resetMyData()">Supprimer mes pesées</button>
+        </div>
+      </div>
+
+      <p id="settings-msg" class="emsg" style="display:none;"></p>
+    </div>
+    <div class="sp-footer">
+      <button class="btn-ghost" onclick="doLogout()">Déconnexion</button>
+      <button class="btn-a" onclick="saveSettings()">Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }                                      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword,
+         signInWithEmailAndPassword, signOut,
+         onAuthStateChanged }                                 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, get, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyCp8ZWQ1Ha4MC9jvkrEFSyJLVaIsNOwFlk",
+  authDomain:"fc-gros-lardon.firebaseapp.com",
+  databaseURL:"https://fc-gros-lardon-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"fc-gros-lardon",
+  storageBucket:"fc-gros-lardon.firebasestorage.app",
+  messagingSenderId:"814928376290",
+  appId:"1:814928376290:web:86761da093bae28cd709bb"
+};
+
+// ← REMPLACE PAR TON EMAIL FIREBASE
+const ADMIN_EMAIL = "matteo.borin31@gmail.com";
+
+const fbApp = initializeApp(firebaseConfig);
+const auth  = getAuth(fbApp);
+const db    = getDatabase(fbApp);
+
+const COLORS = ['#e8ff47','#58a6ff','#ff6b6b','#3fb950','#bc8cff','#f0883e','#39d353','#ffd700'];
+let chartPersonal=null, chartGroupMini=null, chartFull=null;
+let uid=null, isAdmin=false, liveData={};
+
+const $=id=>document.getElementById(id);
+function today(){ return new Date().toISOString().split('T')[0]; }
+function fmtDate(s){ const [y,m,d]=s.split('-'); return `${d}/${m}`; }
+function fmtDateFull(s){ const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
+function initials(s){ return (s||'?').slice(0,2).toUpperCase(); }
+function hColor(s){ let h=0; for(const c of s)h=(Math.imul(31,h)+c.charCodeAt(0))|0; return COLORS[Math.abs(h)%COLORS.length]; }
+function getEntries(u){ return Object.entries(u.entries||{}).map(([date,weight])=>({date,weight:+weight})).sort((a,b)=>a.date.localeCompare(b.date)); }
+function imcCalc(w,h){ if(!w||!h)return null; return +( w/(( h/100)**2) ).toFixed(1); }
+function imcLabel(v){ if(!v)return{txt:'–',cls:'normal'}; if(v<18.5)return{txt:'Sous-poids',cls:'under'}; if(v<25)return{txt:'Normal',cls:'normal'}; if(v<30)return{txt:'Surpoids',cls:'surp'}; return{txt:'Obésité',cls:'obese'}; }
+function imcCol(cls){ return{under:'var(--blue)',normal:'var(--green)',surp:'var(--orange)',obese:'var(--red)'}[cls]||'var(--text)'; }
+function imcPct(v){ return Math.min(100,Math.max(0,((v-16)/24)*100)).toFixed(1); }
+function setSyncDot(on){ [$('sdot'),$('sync-dot2')].forEach(d=>{ if(!d)return; on?d.classList.add('s'):d.classList.remove('s'); }); }
+
+function calcStreak(entries){
+  if(!entries.length) return 0;
+  const dates=entries.map(e=>e.date).sort().reverse();
+  let streak=0, cur=new Date(); cur.setHours(0,0,0,0);
+  for(const d of dates){
+    const dd=new Date(d);
+    const diff=Math.round((cur-dd)/(1000*60*60*24));
+    if(diff<=streak+1){ streak=diff>=0?Math.max(streak,diff+1):streak; cur=dd; }
+    else break;
+  }
+  return streak;
+}
+
+// ── TAB ──
+window.switchTab=(tab)=>{
+  const r=tab==='register';
+  $('reg-extra').style.display=r?'block':'none';
+  $('auth-btn').textContent=r?"S'inscrire →":"Se connecter →";
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&!r)||(i===1&&r)));
+  $('auth-err').style.display='none';
+};
+
+// ── AUTH ──
+window.doAuth=async()=>{
+  const email=$('auth-email').value.trim(), pwd=$('auth-pwd').value;
+  const err=$('auth-err'); err.style.display='none';
+  if(!email||!pwd){err.textContent='Remplis tous les champs.';err.style.display='block';return;}
+  try{
+    if($('reg-extra').style.display==='block'){
+      const pseudo=$('auth-pseudo').value.trim();
+      const sw=parseFloat($('auth-sw').value);
+      const height=parseInt($('auth-h').value);
+      const goal=parseFloat($('auth-goal').value)||null;
+      const age=parseInt($('auth-age').value)||null;
+      if(!pseudo){err.textContent='Entre un pseudo.';err.style.display='block';return;}
+      if(!sw||sw<30||sw>300){err.textContent='Poids de départ invalide.';err.style.display='block';return;}
+      if(!height||height<100||height>250){err.textContent='Taille invalide.';err.style.display='block';return;}
+      const cred=await createUserWithEmailAndPassword(auth,email,pwd);
+      // ← pseudo stocké en DB, pas dans displayName Firebase
+      await set(ref(db,`tracker/users/${cred.user.uid}`),{
+        pseudo, email, startWeight:sw, height, goal:goal||null, age:age||null,
+        entries:{[today()]:sw}, joinedAt:today()
+      });
+      const adminSnap=await get(ref(db,'tracker/admin'));
+      if(!adminSnap.exists()||email===ADMIN_EMAIL){
+        await set(ref(db,'tracker/admin'),cred.user.uid);
+      }
+    } else {
+      await signInWithEmailAndPassword(auth,email,pwd);
+    }
+  }catch(e){
+    const msgs={'auth/email-already-in-use':'Email déjà utilisé.','auth/invalid-email':'Email invalide.','auth/weak-password':'Mot de passe trop court (6 car. min).','auth/user-not-found':'Aucun compte.','auth/wrong-password':'Mot de passe incorrect.','auth/invalid-credential':'Email ou mot de passe incorrect.','auth/too-many-requests':'Trop de tentatives.'};
+    err.textContent=msgs[e.code]||e.message;
+    err.style.display='block';
+  }
+};
+
+window.doLogout=()=>signOut(auth);
+
+// ── AUTH STATE ──
+onAuthStateChanged(auth,async(user)=>{
+  setTimeout(()=>$('loader').classList.add('hide'),400);
+  if(!user){
+    $('auth-screen').style.display='flex';
+    $('app').style.display='none';
+    return;
+  }
+  uid=user.uid;
+  const bannedSnap=await get(ref(db,`tracker/banned/${uid}`));
+  if(bannedSnap.exists()){await signOut(auth);$('banned-screen').style.display='flex';return;}
+
+  const snap=await get(ref(db,`tracker/users/${uid}`));
+
+  // Si user existe pas du tout → setup
+  if(!snap.exists()){
+    $('app').style.display='flex';
+    $('auth-screen').style.display='none';
+    $('setup-overlay').style.display='flex';
+    setupTopbar('?', user.email);
+    return;
+  }
+
+  const u=snap.val();
+  // PSEUDO : lu depuis la DB, jamais depuis Firebase Auth
+  const pseudo=u.pseudo||'(sans pseudo)';
+
+  const adminSnap=await get(ref(db,'tracker/admin'));
+  isAdmin=(adminSnap.exists()&&adminSnap.val()===uid)||(user.email===ADMIN_EMAIL);
+  if(isAdmin&&adminSnap.val()!==uid) await set(ref(db,'tracker/admin'),uid);
+
+  setupTopbar(pseudo, user.email);
+  $('auth-screen').style.display='none';
+  $('app').style.display='flex';
+  $('dash-title').textContent=`Bonjour ${pseudo} 👋`;
+  $('dash-sub').textContent=`${today()} — en forme ?`;
+  $('d-input').value=today();
+
+  if(isAdmin){$('nav-admin').style.display='block';$('tb-adm').style.display='inline-block';}
+
+  startLiveSync();
+});
+
+function setupTopbar(pseudo, email){
+  const col=hColor(pseudo);
+  $('tb-av').textContent=initials(pseudo);
+  $('tb-av').style.background=col+'55';
+  $('tb-av').style.color=col;
+  $('tb-name').textContent=pseudo;
+}
+
+// ── SETUP (1ère connexion) ──
+window.saveSetup=async()=>{
+  const h=parseInt($('setup-h').value);
+  const goal=parseFloat($('setup-goal').value)||null;
+  const err=$('setup-err');
+  if(!h||h<100||h>250){err.textContent='Taille invalide.';err.style.display='block';return;}
+  await update(ref(db,`tracker/users/${uid}`),{height:h,goal:goal||null});
+  $('setup-overlay').style.display='none';
+};
+
+// ── SETTINGS ──
+window.openSettings=()=>{
+  const u=liveData.users?.[uid]; if(!u)return;
+  const pseudo=u.pseudo||'';
+  const col=hColor(pseudo||'?');
+  $('sp-av-big').textContent=initials(pseudo||'?');
+  $('sp-av-big').style.background=col+'44';
+  $('sp-av-big').style.color=col;
+  $('sp-av-name').textContent=pseudo;
+  $('sp-av-email').textContent=u.email||'';
+  $('sp-pseudo').value=pseudo;
+  $('sp-age').value=u.age||'';
+  $('sp-height').value=u.height||'';
+  $('sp-sw').value=u.startWeight||'';
+  $('sp-goal').value=u.goal||'';
+  $('settings-msg').style.display='none';
+  $('settings-overlay').style.display='flex';
+};
+window.closeSettings=()=>$('settings-overlay').style.display='none';
+
+window.saveSettings=async()=>{
+  const pseudo=$('sp-pseudo').value.trim();
+  const height=parseInt($('sp-height').value)||null;
+  const sw=parseFloat($('sp-sw').value)||null;
+  const goal=parseFloat($('sp-goal').value)||null;
+  const age=parseInt($('sp-age').value)||null;
+  const msg=$('settings-msg');
+  if(!pseudo){msg.className='emsg err';msg.textContent='Le pseudo ne peut pas être vide.';msg.style.display='block';return;}
+  setSyncDot(true);
+  const updates={pseudo};
+  if(height) updates.height=height;
+  if(sw) updates.startWeight=sw;
+  if(goal) updates.goal=goal;
+  if(age) updates.age=age;
+  await update(ref(db,`tracker/users/${uid}`),updates);
+  setupTopbar(pseudo, liveData.users[uid]?.email||'');
+  $('dash-title').textContent=`Bonjour ${pseudo} 👋`;
+  msg.className='emsg ok';msg.textContent='✓ Profil mis à jour !';msg.style.display='block';
+  setTimeout(()=>{msg.style.display='none';$('settings-overlay').style.display='none';},1500);
+};
+
+window.resetMyData=async()=>{
+  if(!confirm('Supprimer toutes tes pesées ? Irréversible.'))return;
+  setSyncDot(true);
+  await remove(ref(db,`tracker/users/${uid}/entries`));
+  $('settings-overlay').style.display='none';
+};
+
+// ── ADD / DELETE ──
+window.addEntry=async()=>{
+  const w=parseFloat($('w-input').value);
+  const d=$('d-input').value||today();
+  const msg=$('entry-msg');
+  if(!w||w<30||w>300){msg.className='emsg err';msg.textContent='Poids invalide.';msg.style.display='block';return;}
+  setSyncDot(true);
+  await set(ref(db,`tracker/users/${uid}/entries/${d}`),w);
+  $('w-input').value='';
+  msg.className='emsg ok';msg.textContent='✓ Pesée enregistrée !';msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',2500);
+};
+
+window.deleteEntry=async(dateStr)=>{
+  if(!confirm('Supprimer ?'))return;
+  setSyncDot(true);
+  await remove(ref(db,`tracker/users/${uid}/entries/${dateStr}`));
+};
+
+window.updHeight=async()=>{
+  const h=parseInt($('height-upd').value);
+  const msg=$('height-msg');
+  if(!h||h<100||h>250){msg.className='emsg err';msg.textContent='Taille invalide.';msg.style.display='block';return;}
+  setSyncDot(true);
+  await set(ref(db,`tracker/users/${uid}/height`),h);
+  msg.className='emsg ok';msg.textContent='✓ Taille mise à jour !';msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',2000);
+};
+
+// ── ADMIN ──
+window.kickUser=async(kuid,pseudo)=>{
+  if(!confirm(`Exclure ${pseudo} ?`))return;
+  setSyncDot(true);
+  await set(ref(db,`tracker/banned/${kuid}`),true);
+  await remove(ref(db,`tracker/users/${kuid}`));
+};
+
+// ── LIVE SYNC ──
+function startLiveSync(){
+  onValue(ref(db,'tracker'),snap=>{
+    liveData=snap.val()||{};
+    setSyncDot(false);
+    renderAll();
+  });
+}
+
+// ── NAVIGATION ──
+window.showPage=(name)=>{
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tb-link').forEach(l=>l.classList.remove('active'));
+  $('page-'+name).classList.add('active');
+  $('nav-'+name).classList.add('active');
+  const ap=document.querySelector('.page.active')?.id;
+  if(name==='imc') renderIMC();
+  if(name==='admin') renderAdmin();
+  if(name==='courbes'){ renderChartFull(); renderLeaderboard('lb-courbes'); }
+};
+
+// ── RENDER ALL ──
+function renderAll(){
+  if(!liveData.users?.[uid]) return;
+  renderStats();
+  renderChartPersonal();
+  renderChartGroupMini();
+  renderLeaderboard('lb-dash');
+  renderMyEntries();
+  renderStreak();
+  const ap=document.querySelector('.page.active')?.id;
+  if(ap==='page-imc') renderIMC();
+  if(ap==='page-admin') renderAdmin();
+  if(ap==='page-courbes'){ renderChartFull(); renderLeaderboard('lb-courbes'); }
+}
+
+function renderStats(){
+  const u=liveData.users[uid];
+  const ent=getEntries(u); if(!ent.length) return;
+  const start=u.startWeight||ent[0].weight;
+  const last=ent[ent.length-1].weight;
+  const diff=+(last-start).toFixed(1);
+  const pct=+((diff/start)*100).toFixed(1);
+  const goal=u.goal;
+  const toGoal=goal?+(last-goal).toFixed(1):null;
+  const sign=diff>0?'+':'';
+  $('sgrid').innerHTML=`
+    <div class="sc"><span class="ico">⚖️</span><div class="lbl">Poids actuel</div><div class="val accent">${last.toFixed(1)} kg</div></div>
+    <div class="sc"><span class="ico">📉</span><div class="lbl">Variation totale</div><div class="val ${diff<=0?'good':'bad'}">${sign}${diff} kg</div><div class="sub-val">${sign}${pct} %</div></div>
+    <div class="sc"><span class="ico">🏆</span><div class="lbl">Objectif</div><div class="val ${goal&&toGoal<=0?'good':'bad'}">${goal?goal.toFixed(1)+' kg':'Non défini'}</div>${goal?`<div class="sub-val">${toGoal>0?toGoal+' kg restants':'🎉 Atteint !'}</div>`:''}</div>
+    <div class="sc"><span class="ico">👥</span><div class="lbl">Participants</div><div class="val">${Object.keys(liveData.users||{}).length}</div></div>`;
+}
+
+function renderStreak(){
+  const u=liveData.users[uid];
+  const ent=getEntries(u);
+  const s=calcStreak(ent);
+  $('streak-val').textContent=s;
+  const u2=liveData.users[uid];
+  const goal=u2.goal;
+  if(goal){
+    const ent2=getEntries(u2);
+    const start=u2.startWeight||(ent2[0]?.weight??0);
+    const last=ent2.length?ent2[ent2.length-1].weight:start;
+    const total=start-goal; const done=start-last;
+    const pct=total>0?Math.min(100,Math.max(0,Math.round((done/total)*100))):0;
+    $('progress-goal').innerHTML=`
+      <div style="margin-top:4px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text3);margin-bottom:6px;">
+          <span>Objectif ${goal} kg</span><span>${pct}%</span>
+        </div>
+        <div style="height:6px;background:var(--border2);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;transition:width .6s;"></div>
+        </div>
+      </div>`;
+  }
+}
+
+function renderMyEntries(){
+  const u=liveData.users?.[uid]; if(!u) return;
+  const ent=[...getEntries(u)].reverse();
+  $('my-entries').innerHTML=ent.map(e=>`
+    <div class="erow">
+      <span class="edate">${fmtDateFull(e.date)}</span>
+      <span class="ew">${e.weight.toFixed(1)} kg</span>
+      <button class="edel" onclick="deleteEntry('${e.date}')">×</button>
+    </div>`).join('')||'<p style="color:var(--text3);font-size:13px;">Aucune pesée.</p>';
+}
+
+function renderLeaderboard(targetId){
+  const uids=Object.keys(liveData.users||{});
+  const board=uids.map(id=>{
+    const u=liveData.users[id]; const ent=getEntries(u);
+    const start=u.startWeight||(ent[0]?.weight??0);
+    const last=ent.length?ent[ent.length-1].weight:start;
+    const diff=+(last-start).toFixed(1); const pct=+((diff/start)*100).toFixed(1);
+    return{id,name:u.pseudo||'Anonyme',diff,pct};
+  }).sort((a,b)=>a.diff-b.diff);
+  const medals=['🥇','🥈','🥉'];
+  $(targetId).innerHTML=board.map((b,i)=>{
+    const sign=b.diff>0?'+':''; const col=hColor(b.name);
+    return`<div class="lb-row">
+      <div class="lb-l">
+        <span class="lb-rank ${i===0?'gold':''}">${medals[i]||(i+1)}</span>
+        <div class="lb-av" style="background:${col}22;color:${col};">${initials(b.name)}</div>
+        <span class="lb-name">${b.name}${b.id===uid?'<span class="lb-you">(toi)</span>':''}</span>
+      </div>
+      <div class="lb-r">
+        <div class="lb-val ${b.diff<=0?'good':'bad'}">${sign}${b.diff} kg</div>
+        <div class="lb-pct">${sign}${b.pct} %</div>
+      </div>
+    </div>`;
+  }).join('')||'<p style="color:var(--text3);">–</p>';
+}
+
+// ── CHART HELPERS ──
+function mkChart(id,labels,datasets,height){
+  const el=$(id); if(!el)return null;
+  return new Chart(el,{type:'line',data:{labels,datasets},options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{ticks:{color:'#484f58',maxTicksLimit:6,maxRotation:0},grid:{color:'rgba(255,255,255,0.03)'},border:{color:'rgba(255,255,255,0.06)'}},
+      y:{ticks:{color:'#484f58',callback:v=>v+' kg'},grid:{color:'rgba(255,255,255,0.03)'},border:{color:'rgba(255,255,255,0.06)'}}
+    }
+  }});
+}
+
+function renderChartPersonal(){
+  const u=liveData.users?.[uid]; if(!u)return;
+  const ent=getEntries(u);
+  if(chartPersonal){chartPersonal.destroy();chartPersonal=null;}
+  if(!ent.length)return;
+  const goal=u.goal;
+  const datasets=[{
+    label:'Mon poids',data:ent.map(e=>e.weight),
+    borderColor:COLORS[0],backgroundColor:COLORS[0]+'18',
+    borderWidth:2,pointRadius:4,pointHoverRadius:6,tension:0.35,fill:true
+  }];
+  if(goal) datasets.push({
+    label:'Objectif',data:ent.map(()=>goal),
+    borderColor:'rgba(255,255,255,0.2)',borderDash:[6,4],borderWidth:1,
+    pointRadius:0,tension:0
+  });
+  chartPersonal=mkChart('chart-personal',ent.map(e=>fmtDate(e.date)),datasets,200);
+}
+
+function renderChartGroupMini(){
+  const uids=Object.keys(liveData.users||{}); if(!uids.length)return;
+  const allDates=[...new Set(uids.flatMap(id=>getEntries(liveData.users[id]).map(e=>e.date)))].sort();
+  const datasets=uids.map((id,i)=>{
+    const u=liveData.users[id]; const map={};
+    getEntries(u).forEach(e=>map[e.date]=e.weight);
+    const col=COLORS[i%COLORS.length];
+    return{label:u.pseudo||id,data:allDates.map(d=>map[d]??null),borderColor:col,backgroundColor:'transparent',borderWidth:id===uid?2:1.2,pointRadius:id===uid?3:2,tension:0.35,spanGaps:true};
+  });
+  $('legend-mini').innerHTML=uids.map((id,i)=>`<span class="li"><span class="ldot" style="background:${COLORS[i%COLORS.length]}"></span>${liveData.users[id].pseudo||id}${id===uid?' (moi)':''}</span>`).join('');
+  if(chartGroupMini){chartGroupMini.destroy();chartGroupMini=null;}
+  chartGroupMini=mkChart('chart-group-mini',allDates.map(fmtDate),datasets,180);
+}
+
+function renderChartFull(){
+  const uids=Object.keys(liveData.users||{}); if(!uids.length)return;
+  const allDates=[...new Set(uids.flatMap(id=>getEntries(liveData.users[id]).map(e=>e.date)))].sort();
+  const datasets=uids.map((id,i)=>{
+    const u=liveData.users[id]; const map={};
+    getEntries(u).forEach(e=>map[e.date]=e.weight);
+    const col=COLORS[i%COLORS.length];
+    return{label:u.pseudo||id,data:allDates.map(d=>map[d]??null),borderColor:col,backgroundColor:col+'18',borderWidth:id===uid?2.5:1.5,pointRadius:4,pointHoverRadius:6,tension:0.35,spanGaps:true};
+  });
+  $('legend-full').innerHTML=uids.map((id,i)=>`<span class="li"><span class="ldot" style="background:${COLORS[i%COLORS.length]}"></span>${liveData.users[id].pseudo||id}${id===uid?' (moi)':''}</span>`).join('');
+  if(chartFull){chartFull.destroy();chartFull=null;}
+  chartFull=mkChart('chart-full',allDates.map(fmtDate),datasets,300);
+}
+
+function renderIMC(){
+  if(!liveData.users)return;
+  const me=liveData.users[uid];
+  if(me){
+    const ent=getEntries(me);
+    const lastW=ent.length?ent[ent.length-1].weight:me.startWeight;
+    const imc=imcCalc(lastW,me.height);
+    const ideal=me.height?+(22*(me.height/100)**2).toFixed(1):null;
+    const goal=me.goal;
+    if(imc){
+      const{txt,cls}=imcLabel(imc); const col=imcCol(cls);
+      $('my-imc-v').textContent=imc; $('my-imc-v').style.color=col;
+      $('my-imc-pill').textContent=txt; $('my-imc-pill').style.background=col+'22'; $('my-imc-pill').style.color=col;
+      $('imc-cur').style.left=imcPct(imc)+'%';
+    }
+    $('my-ideal-v').textContent=ideal||'–';
+    if(goal){
+      const ent2=getEntries(me);
+      const lastW2=ent2.length?ent2[ent2.length-1].weight:me.startWeight;
+      const diff=+(lastW2-goal).toFixed(1);
+      const sign=diff>0?'+':'';
+      $('my-goal-v').textContent=sign+diff+' kg';
+      $('my-goal-v').style.color=diff<=0?'var(--green)':'var(--red)';
+    } else { $('my-goal-v').textContent='Non défini'; }
+    if(me.height) $('height-upd').value=me.height;
+  }
+  const uids=Object.keys(liveData.users||{});
+  $('group-imc').innerHTML=uids.map(id=>{
+    const u=liveData.users[id]; const ent=getEntries(u);
+    const lw=ent.length?ent[ent.length-1].weight:u.startWeight;
+    const imc=imcCalc(lw,u.height);
+    const{txt,cls}=imcLabel(imc); const col=hColor(u.pseudo||id);
+    return`<div class="mimc-row">
+      <div class="mimc-l">
+        <div class="mimc-av" style="background:${col}22;color:${col};">${initials(u.pseudo||id)}</div>
+        <div>
+          <div class="mimc-name">${u.pseudo||'Anonyme'}${id===uid?'<span class="lb-you">(toi)</span>':''}</div>
+          <div style="font-size:11px;color:var(--text3);">${u.height?u.height+' cm — '+(u.age?u.age+' ans':''):''}</div>
+        </div>
+      </div>
+      <div class="mimc-r">
+        <div class="mimc-val" style="color:${imcCol(cls)}">${imc||'–'}</div>
+        <div class="pill ${cls}">${txt}</div>
+      </div>
+    </div>`;
+  }).join('')||'<p style="color:var(--text3);">Aucune donnée.</p>';
+}
+
+function renderAdmin(){
+  if(!isAdmin||!liveData.users)return;
+  const uids=Object.keys(liveData.users);
+  $('member-count').textContent=`${uids.length} membre${uids.length>1?'s':''}`;
+  $('admin-list').innerHTML=uids.map(id=>{
+    const u=liveData.users[id]; const pseudo=u.pseudo||'Anonyme';
+    const col=hColor(pseudo); const isMe=id===uid; const isAdm=liveData.admin===id;
+    return`<div class="amr">
+      <div class="amr-l">
+        <div class="amr-av" style="background:${col}22;color:${col};">${initials(pseudo)}</div>
+        <div>
+          <div class="amr-name">${pseudo}${isMe?'<span class="you-p">vous</span>':''}${isAdm?'<span class="adm-p">admin</span>':''}</div>
+          <div class="amr-email">${u.email||''}</div>
+        </div>
+      </div>
+      ${isMe?'<span style="font-size:12px;color:var(--text3);">C\'est toi</span>':`<button class="btn-kick" onclick="kickUser('${id}','${pseudo}')">Exclure</button>`}
+    </div>`;
+  }).join('')||'<p style="color:var(--text3);">Aucun membre.</p>';
+}
+</script>
+</body>
+</html>
